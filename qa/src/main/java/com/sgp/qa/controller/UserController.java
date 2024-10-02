@@ -3,6 +3,8 @@ package com.sgp.qa.controller;
 import com.sgp.qa.model.UnverifiedUser;
 import com.sgp.qa.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -71,9 +73,13 @@ public class UserController {
         return "login"; // Return the name of the login view (HTML page)
     }
 
-    @RequestMapping("/home")
-    public String home() {
-        return "home"; // Return the name of the home view (HTML page)
+    @RequestMapping("/index")
+    public String home(Model model)
+    {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        String username = auth.getName(); // get logged in username
+        model.addAttribute("username", username);
+        return "index"; // Return the name of the home view (HTML page)
     }
 }
 
