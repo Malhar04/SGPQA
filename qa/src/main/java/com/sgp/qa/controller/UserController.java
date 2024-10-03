@@ -1,6 +1,7 @@
 package com.sgp.qa.controller;
 
 import com.sgp.qa.model.UnverifiedUser;
+import com.sgp.qa.service.HomeService;
 import com.sgp.qa.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -17,6 +18,9 @@ public class UserController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private HomeService homeService;
 
 
     @Autowired
@@ -79,7 +83,9 @@ public class UserController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName(); // get logged in username
         model.addAttribute("username", username);
+        model.addAttribute("tags",homeService.getAllTags());
         return "index"; // Return the name of the home view (HTML page)
+
     }
 }
 

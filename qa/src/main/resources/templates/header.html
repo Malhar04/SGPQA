@@ -26,92 +26,9 @@
     <!-- TinyMCE for rich text editing with valid API key -->
     <script src="https://cdn.tiny.cloud/1/gmupb05j7ycv1e5dyejpg22tw2jthq5ehjdhnwtqdg7j9xj5/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
 
+    <link rel="stylesheet" th:href="@{css/header.css}">
 
-    <!-- Custom CSS -->
-    <style>
-        body {
-            font-family: 'Roboto', sans-serif;
-        }
 
-        /* Center the navbar content together */
-        .navbar {
-            justify-content: center;
-        }
-
-        .navbar-nav {
-            flex-direction: row;
-            gap: 20px; /* Increased spacing between navbar items */
-            align-items: center;
-        }
-
-        /* Align search icon inside the search bar */
-        .search-bar {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .search-input {
-            padding-left: 35px;
-            width: 350px; /* Kept the increased width of the search bar */
-            height: 40px;
-            border-radius: 20px;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 10px;
-            font-size: 1.2rem;
-            color: #777;
-        }
-
-        /* Styling and hover effect for buttons */
-        .btn, .nav-link {
-            transition: background-color 0.3s ease, transform 0.3s ease;
-        }
-
-        /* Hover effect to darken the entire button */
-        .btn:hover, .nav-link:hover {
-            background-color: #343a40 !important;
-            color: #fff !important;
-        }
-
-        /* Add Question button styling */
-        #addQuestionBtn {
-            background-color: #dc3545; /* Red color */
-            color: white;
-            border-radius: 20px;
-            height: 40px;
-            padding: 0 20px;
-        }
-
-        #addQuestionBtn:hover {
-            background-color: #c82333;
-        }
-
-        /* Profile dropdown menu */
-        .dropdown-menu {
-            min-width: 200px;
-            text-align: center;
-        }
-
-        .dropdown-menu .profile-img {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            margin-bottom: 10px;
-        }
-
-        /* Larger notification icon */
-        .notification-icon {
-            font-size: 1.5rem;
-        }
-
-        /* Centering everything tightly together */
-        .navbar-nav .nav-item {
-            margin-left: 0;
-        }
-    </style>
 </head>
 <body>
 <!-- Header Section -->
@@ -173,8 +90,10 @@
     </div>
 </nav>
 
+
+
 <!-- Add Question Modal -->
-<div class="modal fade" id="addQuestionModal" tabindex="-1" aria-labelledby="addQuestionModalLabel" aria-hidden="true">
+<div class="modal fade" id="addQuestionModal" tabindex="-1" aria-labelledby="addQuestionModalLabel" aria-hidden="true" >
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -194,18 +113,48 @@
                     <textarea id="questionContent" class="form-control" placeholder="Write your question details here..."></textarea>
                 </div>
 
-                <!-- Tags/Category -->
-                <div class="mb-3">
-                    <label for="questionTags">Tags/Category</label>
-                    <select id="questionTags" class="selectpicker form-control" multiple data-live-search="true" title="Choose one or more tags">
-                        <option>Technology</option>
-                        <option>Science</option>
-                        <option>Health</option>
-                        <option>Education</option>
-                        <option>Programming</option>
-                        <option>Mathematics</option>
-                    </select>
+
+
+                <div class="container">
+                    <div class="mb-3">
+                        <label for="questionTags">Tags</label>
+                        <select id="questionTags" class="form-select" multiple aria-label="multiple select example"
+                                data-selected-text-format="values"
+                                data-none-selected-text=""
+                                onchange="updateSelectedTags()">
+                            <option th:each="tag : ${tags}" th:value="${tag.name}" th:text="${tag.name}"></option>
+                        </select>
+                    </div>
+                    <div id="selectedTags" class="mb-3"></div>
                 </div>
+
+                <script>
+                    // Function to update displayed selected tags
+                    function updateSelectedTags() {
+                        const select = document.getElementById("questionTags");
+                        const selectedTagsContainer = document.getElementById("selectedTags");
+                        selectedTagsContainer.innerHTML = ""; // Clear previous tags
+
+                        Array.from(select.selectedOptions).forEach(option => {
+                            const tagName = option.value; // Get the selected tag name
+                            const tagElement = document.createElement("div");
+                            tagElement.className = "tag";
+                            tagElement.textContent = tagName;
+
+                            // Create the remove button
+                            const removeButton = document.createElement("span");
+                            removeButton.textContent = "×";
+                            removeButton.className = "remove-tag";
+                            removeButton.onclick = function() {
+                                option.selected = false; // Deselect the option
+                                updateSelectedTags(); // Update the display
+                            };
+
+                            tagElement.appendChild(removeButton); // Append the remove button to the tag
+                            selectedTagsContainer.appendChild(tagElement); // Append the tag to the container
+                        });
+                    }
+                </script>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

@@ -1,0 +1,4 @@
+<!-- Tags fragment to dynamically load options -->
+<div th:fragment="tagsOptions">
+    <option th:each="tag : ${tags}" th:value="${tag.id}" th:text="${tag.name}"></option>
+</div>
