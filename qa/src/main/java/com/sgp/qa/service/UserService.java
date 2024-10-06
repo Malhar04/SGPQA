@@ -20,6 +20,7 @@ import java.util.Random;
 @Service
 public class UserService {
 
+
     @Autowired
     private UnverifiedUserRepository unverifiedUserRepository;
 
@@ -39,6 +40,7 @@ public class UserService {
         sendOtpEmail(user.getEmail(), otp);
         return unverifiedUserRepository.save(user);
     }
+
 
 
     // OTP verification logic

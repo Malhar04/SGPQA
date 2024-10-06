@@ -32,8 +32,8 @@
 </head>
 <body>
 <!-- Header Section -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container-fluid">
+<nav class="navbar navbar-expand-lg navbar-light bg-light" >
+    <div class="container-fluid ">
         <!-- Toggle button for mobile view -->
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -93,6 +93,7 @@
 
 
 <!-- Add Question Modal -->
+<form  th:action="@{/addquestion}" th:object="${question}" METHOD="POST">
 <div class="modal fade" id="addQuestionModal" tabindex="-1" aria-labelledby="addQuestionModalLabel" aria-hidden="true" >
     <div class="modal-dialog">
         <div class="modal-content">
@@ -104,13 +105,15 @@
                 <!-- Question Title -->
                 <div class="mb-3">
                     <label for="questionTitle">Title</label>
-                    <input type="text" class="form-control" id="questionTitle" placeholder="Enter your question title" required>
+                    <input type="text" class="form-control" id="questionTitle" placeholder="Enter your question title" th:field="${question.title}" />
                 </div>
 
                 <!-- Question Content (Rich Text Editor) -->
                 <div class="mb-3">
                     <label for="questionContent">Content</label>
-                    <textarea id="questionContent" class="form-control" placeholder="Write your question details here..."></textarea>
+                    <textarea id="questionContent" class="form-control" placeholder="Write your question details here..." th:field="${question.description}"></textarea>
+
+
                 </div>
 
 
@@ -122,21 +125,28 @@
                                 data-selected-text-format="values"
                                 data-none-selected-text=""
                                 onchange="updateSelectedTags()">
-                            <option th:each="tag : ${tags}" th:value="${tag.name}" th:text="${tag.name}"></option>
+                            <option th:each="tag : ${tags}" th:value="${tag.name}" th:text="${tag.name}" th:field="${question.tags}"></option>
                         </select>
                     </div>
                     <div id="selectedTags" class="mb-3"></div>
                 </div>
+                <input type="hidden" id="hiddenTags" th:field="${question.Tags}" />
+                <input type="hidden" id="hiddenUserId" th:value="${username}" th:field="${question.users}" />
 
                 <script>
-                    // Function to update displayed selected tags
+                    // Function to update selected tags and hidden input
                     function updateSelectedTags() {
                         const select = document.getElementById("questionTags");
                         const selectedTagsContainer = document.getElementById("selectedTags");
+                        const hiddenTagsInput = document.getElementById("hiddenTags");
+
                         selectedTagsContainer.innerHTML = ""; // Clear previous tags
+                        let selectedTagValues = []; // Store selected tag values
 
                         Array.from(select.selectedOptions).forEach(option => {
                             const tagName = option.value; // Get the selected tag name
+                            selectedTagValues.push(tagName); // Add to selected tags array
+
                             const tagElement = document.createElement("div");
                             tagElement.className = "tag";
                             tagElement.textContent = tagName;
@@ -153,24 +163,40 @@
                             tagElement.appendChild(removeButton); // Append the remove button to the tag
                             selectedTagsContainer.appendChild(tagElement); // Append the tag to the container
                         });
+
+                        // Update hidden input with the selected tags
+                        hiddenTagsInput.value = selectedTagValues.join(",");
                     }
                 </script>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Submit</button>
+                <input type="submit" value="submit" class="btn btn-primary"/>
             </div>
         </div>
     </div>
 </div>
+</form>
 
 <script>
     tinymce.init({
-        selector: '#questionContent',
-        plugins: 'advlist autolink lists link image charmap print preview hr anchor pagebreak',
-        toolbar_mode: 'floating',
-        height: 300
+        selector: '#questionContent',  // Target the textarea for TinyMCE
+        menubar: false,
+        plugins: 'link lists',         // Include any necessary plugins (e.g., link, lists)
+        toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist | link',
+        forced_root_block: false,      // Prevent TinyMCE from wrapping content in <p> tags
+        force_br_newlines: true,       // Use <br> instead of <p> for new lines
+        force_p_newlines: false,       // Prevents wrapping in <p>
+        branding: false,
+        height: 300,                   // Adjust height as needed
+        setup: function (editor) {
+            // Ensure that TinyMCE content gets submitted with the form
+            editor.on('change', function () {
+                editor.save();
+            });
+        }
     });
+
 </script>
 
 <!-- Initialize Bootstrap Select -->

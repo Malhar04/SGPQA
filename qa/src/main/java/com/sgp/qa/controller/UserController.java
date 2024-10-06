@@ -50,6 +50,8 @@ public class UserController {
     }
 
 
+
+
     @GetMapping("/verify")
     public String showVerificationForm() {
         return "verify";
@@ -77,16 +79,7 @@ public class UserController {
         return "login"; // Return the name of the login view (HTML page)
     }
 
-    @RequestMapping("/index")
-    public String home(Model model)
-    {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName(); // get logged in username
-        model.addAttribute("username", username);
-        model.addAttribute("tags",homeService.getAllTags());
-        return "index"; // Return the name of the home view (HTML page)
 
-    }
 }
 
 
